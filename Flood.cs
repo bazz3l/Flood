@@ -8,8 +8,8 @@ namespace Oxide.Plugins
     class Flood : RustPlugin
     {
         #region Fields
-        private const string permUse = "flood.use";
-        private FloodManager manager = new FloodManager();
+        private const string _permUse = "flood.use";
+        private FloodManager _manager = new FloodManager();
         private static Flood Instance;
         #endregion
 
@@ -28,7 +28,7 @@ namespace Oxide.Plugins
 
         private void OnServerInitialized()
         {
-            permission.RegisterPermission(permUse, this);
+            permission.RegisterPermission(_permUse, this);
         }
 
         private void Init()
@@ -38,7 +38,7 @@ namespace Oxide.Plugins
 
         private void Unload()
         {
-            manager.StopFlood();
+            _manager.StopFlood();
 
             Instance = null;
         }
@@ -47,27 +47,27 @@ namespace Oxide.Plugins
         #region Core
         class FloodManager
         {
-            private float floodMaxLevel = 1f;
-            private float floodLevel = 0f;
-            private float floodPercent = 0f;
-            private bool floodReverse;
-            private Timer floodTimer;
-            private bool floodInProgress;
+            private float _floodMaxLevel = 1f;
+            private float _floodLevel = 0f;
+            private float _floodPercent = 0f;
+            private bool _floodReverse;
+            private Timer _floodTimer;
+            private bool _floodInProgress;
 
             public void StartFlood()
             {
-                floodInProgress = true;
+                _floodInProgress = true;
 
-                floodTimer = Instance.timer.Every(0.5f, () => CheckFlood());
+                _floodTimer = Instance.timer.Every(0.5f, () => CheckFlood());
             }
 
             public void StopFlood()
             {
-                floodTimer?.Destroy();
+                _floodTimer?.Destroy();
 
-                floodInProgress = false;
-                floodReverse = false;
-                floodLevel = 0f;
+                _floodInProgress = false;
+                _floodReverse = false;
+                _floodLevel = 0f;
 
                 SetWeather(0.0);
                 SetOceanLevel(0f);
@@ -75,7 +75,7 @@ namespace Oxide.Plugins
 
             public bool InProgress()
             {
-                return floodInProgress;
+                return _floodInProgress;
             }
 
             private void SetWeather(double amount)
@@ -88,26 +88,26 @@ namespace Oxide.Plugins
 
             public void SetMaxLevel(float level)
             {
-                floodMaxLevel = level;
+                _floodMaxLevel = level;
             }
 
             private void CheckFlood()
             {
-                if (!floodReverse && floodLevel >= floodMaxLevel)
+                if (!_floodReverse && _floodLevel >= _floodMaxLevel)
                 {
-                    floodReverse = true;
+                    _floodReverse = true;
                 }
 
-                if (!floodReverse)
-                    floodLevel += 0.01f;
+                if (!_floodReverse)
+                    _floodLevel += 0.01f;
                 else
-                    floodLevel -= 0.01f;
+                    _floodLevel -= 0.01f;
 
-                SetWeather((floodLevel / floodMaxLevel));
+                SetWeather((_floodLevel / _floodMaxLevel));
 
-                SetOceanLevel(floodLevel);
+                SetOceanLevel(_floodLevel);
 
-                if (floodLevel <= 0f)
+                if (_floodLevel <= 0f)
                 {
                     StopFlood();
                 }
@@ -116,20 +116,20 @@ namespace Oxide.Plugins
 
         private void StartFlood(BasePlayer player)
         {
-            if (manager.InProgress())
+            if (_manager.InProgress())
             {
                 player.ChatMessage(Lang("FloodInProgress", player.UserIDString));
                 return;
             }
 
-            manager.StartFlood();
+            _manager.StartFlood();
 
             player.ChatMessage(Lang("FloodStarted", player.UserIDString));
         }
 
         private void StopFlood(BasePlayer player)
         {
-            manager.StopFlood();
+            _manager.StopFlood();
 
             player.ChatMessage(Lang("FloodEnded", player.UserIDString));
         }
@@ -150,7 +150,7 @@ namespace Oxide.Plugins
                 return;
             }
 
-            manager.SetMaxLevel(maxLevel);
+            _manager.SetMaxLevel(maxLevel);
 
             player.ChatMessage(Lang("FloodLevelSet", player.UserIDString, maxLevel));
         }
@@ -160,7 +160,7 @@ namespace Oxide.Plugins
         [ChatCommand("flood")]
         private void FloodCommand(BasePlayer player, string command, string[] args)
         {
-            if (!permission.UserHasPermission(player.UserIDString, permUse))
+            if (!permission.UserHasPermission(player.UserIDString, _permUse))
             {
                 player.ChatMessage(Lang("NoPermission", player.UserIDString));
                 return;
