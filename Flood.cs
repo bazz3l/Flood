@@ -3,14 +3,14 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("Flood", "Bazz3l", "1.0.0")]
+    [Info("Flood", "Bazz3l", "1.0.1")]
     [Description("Flood the server with bad weather.")]
     class Flood : RustPlugin
     {
         #region Fields
-        const string permUse = "flood.use";
-        FloodManager manager = new FloodManager();
-        static Flood Instance;
+        private const string permUse = "flood.use";
+        private FloodManager manager = new FloodManager();
+        private static Flood Instance;
         #endregion
 
         #region Oxide
@@ -26,17 +26,17 @@ namespace Oxide.Plugins
             }, this);
         }
 
-        void OnServerInitialized()
+        private void OnServerInitialized()
         {
             permission.RegisterPermission(permUse, this);
         }
 
-        void Init()
+        private void Init()
         {
             Instance = this;
         }
 
-        void Unload()
+        private void Unload()
         {
             manager.StopFlood();
 
@@ -47,12 +47,12 @@ namespace Oxide.Plugins
         #region Core
         class FloodManager
         {
-            float floodMaxLevel = 1f;
-            float floodLevel = 0f;
-            float floodPercent = 0f;
-            bool floodReverse;
-            Timer floodTimer;
-            bool floodInProgress;
+            private float floodMaxLevel = 1f;
+            private float floodLevel = 0f;
+            private float floodPercent = 0f;
+            private bool floodReverse;
+            private Timer floodTimer;
+            private bool floodInProgress;
 
             public void StartFlood()
             {
@@ -78,20 +78,20 @@ namespace Oxide.Plugins
                 return floodInProgress;
             }
 
-            void SetWeather(double amount)
+            private void SetWeather(double amount)
             {
                 RunCommand($"weather.clouds " + amount);
                 RunCommand($"weather.rain " + amount);
             }
 
-            void SetOceanLevel(float amount) => RunCommand("env.oceanlevel " + amount);
+            private void SetOceanLevel(float amount) => RunCommand("env.oceanlevel " + amount);
 
             public void SetMaxLevel(float level)
             {
                 floodMaxLevel = level;
             }
 
-            void CheckFlood()
+            private void CheckFlood()
             {
                 if (!floodReverse && floodLevel >= floodMaxLevel)
                 {
@@ -114,7 +114,7 @@ namespace Oxide.Plugins
             }
         }
 
-        void StartFlood(BasePlayer player)
+        private void StartFlood(BasePlayer player)
         {
             if (manager.InProgress())
             {
@@ -127,14 +127,14 @@ namespace Oxide.Plugins
             player.ChatMessage(Lang("FloodStarted", player.UserIDString));
         }
 
-        void StopFlood(BasePlayer player)
+        private void StopFlood(BasePlayer player)
         {
             manager.StopFlood();
 
             player.ChatMessage(Lang("FloodEnded", player.UserIDString));
         }
 
-        void SetFlood(BasePlayer player, string[] args)
+        private void SetFlood(BasePlayer player, string[] args)
         {
             if (args.Length != 1)
             {
@@ -154,13 +154,11 @@ namespace Oxide.Plugins
 
             player.ChatMessage(Lang("FloodLevelSet", player.UserIDString, maxLevel));
         }
-
-        public static void RunCommand(string command) => Instance.Server.Command(command);
         #endregion
 
         #region Command
         [ChatCommand("flood")]
-        void FloodCommand(BasePlayer player, string command, string[] args)
+        private void FloodCommand(BasePlayer player, string command, string[] args)
         {
             if (!permission.UserHasPermission(player.UserIDString, permUse))
             {
@@ -193,7 +191,9 @@ namespace Oxide.Plugins
         #endregion
 
         #region Helpers
-        string Lang(string key, string id = null, params object[] args) => string.Format(lang.GetMessage(key, this, id), args);
+        private string Lang(string key, string id = null, params object[] args) => string.Format(lang.GetMessage(key, this, id), args);
+
+        private static void RunCommand(string command) => Instance.Server.Command(command);
         #endregion
     }
 }
