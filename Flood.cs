@@ -5,12 +5,12 @@ namespace Oxide.Plugins
 {
     [Info("Flood", "Bazz3l", "1.0.1")]
     [Description("Flood the server with bad weather.")]
-    class Flood : RustPlugin
+    public class Flood : RustPlugin
     {
         #region Fields
-        private const string _permUse = "flood.use";
-        private FloodManager _manager = new FloodManager();
-        private static Flood Instance;
+        private const string PermUse = "flood.use";
+        private readonly FloodManager _manager = new FloodManager();
+        private static Flood _instance;
         #endregion
 
         #region Oxide
@@ -28,24 +28,24 @@ namespace Oxide.Plugins
 
         private void OnServerInitialized()
         {
-            permission.RegisterPermission(_permUse, this);
+            permission.RegisterPermission(PermUse, this);
         }
 
         private void Init()
         {
-            Instance = this;
+            _instance = this;
         }
 
         private void Unload()
         {
             _manager.StopFlood();
 
-            Instance = null;
+            _instance = null;
         }
         #endregion
 
         #region Core
-        class FloodManager
+        private class FloodManager
         {
             private float _floodMaxLevel = 1f;
             private float _floodLevel = 0f;
@@ -58,7 +58,7 @@ namespace Oxide.Plugins
             {
                 _floodInProgress = true;
 
-                _floodTimer = Instance.timer.Every(0.5f, () => CheckFlood());
+                _floodTimer = _instance.timer.Every(0.5f, () => CheckFlood());
             }
 
             public void StopFlood()
@@ -160,7 +160,7 @@ namespace Oxide.Plugins
         [ChatCommand("flood")]
         private void FloodCommand(BasePlayer player, string command, string[] args)
         {
-            if (!permission.UserHasPermission(player.UserIDString, _permUse))
+            if (!permission.UserHasPermission(player.UserIDString, PermUse))
             {
                 player.ChatMessage(Lang("NoPermission", player.UserIDString));
                 return;
@@ -193,7 +193,7 @@ namespace Oxide.Plugins
         #region Helpers
         private string Lang(string key, string id = null, params object[] args) => string.Format(lang.GetMessage(key, this, id), args);
 
-        private static void RunCommand(string command) => Instance.Server.Command(command);
+        private static void RunCommand(string command) => _instance.Server.Command(command);
         #endregion
     }
 }
