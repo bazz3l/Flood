@@ -49,7 +49,6 @@ namespace Oxide.Plugins
         {
             private float _floodMaxLevel = 1f;
             private float _floodLevel = 0f;
-            private float _floodPercent = 0f;
             private bool _floodReverse;
             private Timer _floodTimer;
             private bool _floodInProgress;
@@ -58,7 +57,7 @@ namespace Oxide.Plugins
             {
                 _floodInProgress = true;
 
-                _floodTimer = _instance.timer.Every(0.5f, () => CheckFlood());
+                _floodTimer = _instance.timer.Every(0.5f, CheckFlood);
             }
 
             public void StopFlood()
