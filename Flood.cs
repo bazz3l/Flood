@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Oxide.Plugins
 {
-    [Info("Flood", "Bazz3l", "1.0.1")]
+    [Info("Flood", "Bazz3l", "1.0.2")]
     [Description("Flood the server with bad weather.")]
     public class Flood : RustPlugin
     {
@@ -79,11 +79,11 @@ namespace Oxide.Plugins
 
             private void SetWeather(double amount)
             {
-                RunCommand($"weather.clouds " + amount);
-                RunCommand($"weather.rain " + amount);
+                RunCommand($"weather.clouds {amount}");
+                RunCommand($"weather.rain {amount}");
             }
 
-            private void SetOceanLevel(float amount) => RunCommand("env.oceanlevel " + amount);
+            private void SetOceanLevel(float amount) => RunCommand($"env.oceanlevel {amount}");
 
             public void SetMaxLevel(float level)
             {
