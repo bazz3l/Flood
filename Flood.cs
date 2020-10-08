@@ -57,7 +57,7 @@ namespace Oxide.Plugins
             {
                 _floodInProgress = true;
 
-                _floodTimer = _instance.timer.Every(0.5f, CheckFlood);
+                _floodTimer = _instance.timer.Every(0.1f, CheckFlood);
             }
 
             public void StopFlood()
@@ -192,7 +192,7 @@ namespace Oxide.Plugins
         #region Helpers
         private string Lang(string key, string id = null, params object[] args) => string.Format(lang.GetMessage(key, this, id), args);
 
-        private static void RunCommand(string command) => _instance.Server.Command(command);
+        private static void RunCommand(string command) => ConsoleSystem.Run(ConsoleSystem.Option.Server.Quiet(), command);
         #endregion
     }
 }
