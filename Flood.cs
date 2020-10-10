@@ -4,16 +4,19 @@ using System.Linq;
 namespace Oxide.Plugins
 {
     [Info("Flood", "Bazz3l", "1.0.2")]
-    [Description("Flood the server with bad weather.")]
+    [Description("Floods the server by increasing ocean level, also inlcudes weather changes.")]
     public class Flood : RustPlugin
     {
         #region Fields
+
         private const string PermUse = "flood.use";
         private readonly FloodManager _manager = new FloodManager();
         private static Flood _instance;
+
         #endregion
 
         #region Oxide
+
         protected override void LoadDefaultMessages()
         {
             lang.RegisterMessages(new Dictionary<string, string> {
@@ -42,12 +45,14 @@ namespace Oxide.Plugins
 
             _instance = null;
         }
+
         #endregion
 
         #region Core
+
         private class FloodManager
         {
-            private float _floodMaxLevel = 1f;
+            private float _floodMaxLevel = 5f;
             private float _floodLevel = 0f;
             private bool _floodReverse;
             private Timer _floodTimer;
@@ -153,9 +158,11 @@ namespace Oxide.Plugins
 
             player.ChatMessage(Lang("FloodLevelSet", player.UserIDString, maxLevel));
         }
+
         #endregion
 
         #region Command
+
         [ChatCommand("flood")]
         private void FloodCommand(BasePlayer player, string command, string[] args)
         {
@@ -187,12 +194,15 @@ namespace Oxide.Plugins
                     break;
             }
         }
+
         #endregion
 
         #region Helpers
+
         private string Lang(string key, string id = null, params object[] args) => string.Format(lang.GetMessage(key, this, id), args);
 
         private static void RunCommand(string command) => ConsoleSystem.Run(ConsoleSystem.Option.Server.Quiet(), command);
+
         #endregion
     }
 }
